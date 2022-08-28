@@ -111,10 +111,8 @@ setCount(count+1)
         msgData.msgType = newReference.key;
         newReference.set(msgData).then(() => {
             let chatListupdate = {
-                // latitude: fromLocations.latitude,
-                //  longitude: fromLocations.longitude,
-                latitude: "90.232",
-                longitude: "80.36",
+                latitude: fromLocations.latitude,
+                 longitude: fromLocations.longitude,
                 sendTime: msgData.sendTime,
             };
             database()
@@ -174,8 +172,8 @@ const submitstop = ()=>{
         // setLoading(false)
         setTimeout(() => setLoading(false), 3000)
     }
-    // Geocoder.init("AIzaSyCt08HcMYX8balI6hj5BXtMJKQ1G_eVcFs")
-    Geocoder.init("AIzaSyA1h1LUhTujG8F1fz0WLXAYrYPsXzKSP4M")
+    Geocoder.init("AIzaSyCt08HcMYX8balI6hj5BXtMJKQ1G_eVcFs")
+    // Geocoder.init("AIzaSyA1h1LUhTujG8F1fz0WLXAYrYPsXzKSP4M")
 
   
 //  
