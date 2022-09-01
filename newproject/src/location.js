@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef,useCallback } from "react";
 import {
     View,
     Text,
@@ -23,18 +23,18 @@ import moment from 'moment';
 import firebase from '@react-native-firebase/app'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyABUWs1V9dV1DTye0DQk8uolfwwz1gvvVA",
-  authDomain: "map-c01e5.firebaseapp.com",
-  databaseURL: "https://map-c01e5-default-rtdb.firebaseio.com",
-  projectId: "map-c01e5",
-  storageBucket: "map-c01e5.appspot.com",
-  messagingSenderId: "342719822878",
-  appId: "1:342719822878:web:b6b9aa0005d6a9669b020f",
-  measurementId: "G-YCWDWSXE6J"
+    apiKey: "AIzaSyABUWs1V9dV1DTye0DQk8uolfwwz1gvvVA",
+    authDomain: "map-c01e5.firebaseapp.com",
+    databaseURL: "https://map-c01e5-default-rtdb.firebaseio.com",
+    projectId: "map-c01e5",
+    storageBucket: "map-c01e5.appspot.com",
+    messagingSenderId: "342719822878",
+    appId: "1:342719822878:web:b6b9aa0005d6a9669b020f",
+    measurementId: "G-YCWDWSXE6J"
 };
 let app;
-if (!firebase.apps.length ) {
-  app = firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    app = firebase.initializeApp(firebaseConfig);
 }
 
 const screen = Dimensions.get('window');
@@ -44,7 +44,7 @@ const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const OrderDelivery = ({ route, navigation }) => {
-    const {width,height}=Dimensions.get("screen")
+    const { width, height } = Dimensions.get("screen")
     const mapRef = useRef()
     const markerRef = useRef()
     // mapRef.current.animateToRegion({
@@ -56,7 +56,7 @@ const OrderDelivery = ({ route, navigation }) => {
     const [from, setFrom] = React.useState("")
     const [toadd, seTodd] = React.useState("")
     const [loading, setLoading] = React.useState(false);
-let coutn=1
+    let coutn = 1
     const [restaurant, setRestaurant] = React.useState(null)
     const [streetName, setStreetName] = React.useState("")
     const [fromLocations, setFromLocations] = React.useState(null)
@@ -76,8 +76,8 @@ let coutn=1
     // this is for forceupdate code end
 
     // let { tolocation, fromloacation } = route.params;
-    let tolocation="puducherry"
-    let fromloacation="chennai"
+    let tolocation = "puducherry"
+    let fromloacation = "chennai"
     useLayoutEffect(() => {
         loacationto()
         // currentloca()
@@ -89,19 +89,20 @@ let coutn=1
             // setTimeout(() => location_direction(), 6000)
         }
     }, [from, toadd])
-    useEffect(() => {
-       setInterval(() => {
-        sendMsg()
-setCount(count+1)
-          }, 10000);
-    }, [count])
+    // useEffect(() => {
+    //     setInterval(() => {
+    //         sendMsg()
+    //         setCount(count + 1)
+    //     }, 10000);
+    // }, [count])
 
-    const sendMsg = () => {
+    const sendMsg = useCallback(() => {
         const times = moment().format('')
-       console.log("data",fromLocations);
-        
+        console.log("data", fromLocations);
+
         let msgData = {
-         
+            latitude: fromLocations.latitude,
+            longitude: fromLocations.longitude,
             msgType: 'number',
         };
 
@@ -112,31 +113,62 @@ setCount(count+1)
         newReference.set(msgData).then(() => {
             let chatListupdate = {
                 latitude: fromLocations.latitude,
-                 longitude: fromLocations.longitude,
+                longitude: fromLocations.longitude,
                 sendTime: msgData.sendTime,
             };
-            database()
-                .ref('/users/123')
-                .update(chatListupdate)
-                .then(() => console.log('Data updated.'));
-            console.log("'/chatlist/' + userData?.id + '/' + data?.id", )            
+            // database()
+            //     .ref('/users/123')
+            //     .update(chatListupdate)
+            //     .then(() => console.log('Data updated.', chatListupdate));
+            // console.log("'/chatlist/' + userData?.id + '/' + data?.id",)
         });
-    };
+
+    }, [fromLocations]);
+
+    // const sendMsg = () => {
+    //     const times = moment().format('')
+    //     console.log("data", fromLocations);
+
+    //     let msgData = {
+
+    //         msgType: 'number',
+    //     };
+
+    //     const newReference = database()
+    //         .ref('/users/123')
+    //         .push();
+    //     msgData.msgType = newReference.key;
+    //     newReference.set(msgData).then(() => {
+    //         let chatListupdate = {
+    //             latitude: fromLocations.latitude,
+    //             longitude: fromLocations.longitude,
+    //             sendTime: msgData.sendTime,
+    //         };
+    //         database()
+    //             .ref('/users/123')
+    //             .update(chatListupdate)
+    //             .then(() => console.log('Data updated.', chatListupdate));
+    //         console.log("'/chatlist/' + userData?.id + '/' + data?.id",)
+    //     });
+    // };
 
     //  setInterval(() => {
     //     sendMsg()
 
     //       }, 10000);
-const submit = ()=>{
-    
-    sendMsg()
+    const submit = () => {
 
-}
-const submitstop = ()=>{
-    navigation.navigate("database")
-    console.log("stop");
-    setStop(!stop)
-}
+        setInterval(() => {
+                    sendMsg()
+                    setCount(count + 1)
+                }, 10000);
+
+    }
+    const submitstop = () => {
+        navigation.navigate("database")
+        // console.log("stop");
+        setStop(!stop)
+    }
 
     const location_direction = async () => {
 
@@ -152,8 +184,8 @@ const submitstop = ()=>{
             latitude: from.lat,
             longitude: from.lng,
         }
-        console.log("goooodddd", goodlocation);
-        console.log("fromgot", fromgot);
+        // console.log("goooodddd", goodlocation);
+        // console.log("fromgot", fromgot);
 
         let mapRegion = {
             latitude: (fromLoc.lat + toLoc.lat) / 2,
@@ -161,8 +193,8 @@ const submitstop = ()=>{
             latitudeDelta: Math.abs(fromLoc.lat - toLoc.lat) * 2,
             longitudeDelta: Math.abs(fromLoc.lng - toLoc.lng) * 2
         }
-        console.log("region", mapRegion);
-        console.log("toaddtoLoctoLoc", toLoc.lat);
+        // console.log("region", mapRegion);
+        // console.log("toaddtoLoctoLoc", toLoc.lat);
         await setRestaurant(restaurant)
         // setStreetName(street)
         await setFromLocations(fromgot)
@@ -175,11 +207,11 @@ const submitstop = ()=>{
     Geocoder.init("AIzaSyCt08HcMYX8balI6hj5BXtMJKQ1G_eVcFs")
     // Geocoder.init("AIzaSyA1h1LUhTujG8F1fz0WLXAYrYPsXzKSP4M")
 
-  
-//  
 
-const loacationto = () => {
-    // Geolocation.watchPosition(data)
+    //  
+
+    const loacationto = () => {
+        // Geolocation.watchPosition(data)
 
         Geocoder.from(tolocation)
             .then(json => {
@@ -247,25 +279,25 @@ const loacationto = () => {
                 provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                 style={styles.map}
             >
-                
+
                 {destinationMarker()}
                 {/* {carIcon()} */}
             </MapView> : <Loader loading={loading} />}
-            <View style={{flexDirection:"row", justifyContent:"space-around",top:10}}>
-            <TouchableOpacity style={{backgroundColor:"green", width:"45%",height:50,alignItems:"center", justifyContent:"center" }}
-            onPress={submit}
-            >
-                <Text style={{color:"white", fontSize:25, fontWeight:"bold"}}>START</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{backgroundColor:"orange", width:"45%",height:50,alignItems:"center", justifyContent:"center" }}
-            onPress={submitstop}
-            >
-                <Text style={{color:"white", fontSize:25, fontWeight:"bold"}}>DETAILS</Text>
-            </TouchableOpacity>
-                </View>
-              {stop?  <View  style={{marginTop:20, width:"95%", alignItems:"center"}}>
-                    <Text>loading</Text>
-                </View>:null}
+            <View style={{ flexDirection: "row", justifyContent: "space-around", top: 10 }}>
+                <TouchableOpacity style={{ backgroundColor: "green", width: "45%", height: 50, alignItems: "center", justifyContent: "center" }}
+                    onPress={submit}
+                >
+                    <Text style={{ color: "white", fontSize: 25, fontWeight: "bold" }}>START</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ backgroundColor: "orange", width: "45%", height: 50, alignItems: "center", justifyContent: "center" }}
+                    onPress={submitstop}
+                >
+                    <Text style={{ color: "white", fontSize: 25, fontWeight: "bold" }}>DETAILS</Text>
+                </TouchableOpacity>
+            </View>
+            {stop ? <View style={{ marginTop: 20, width: "95%", alignItems: "center" }}>
+                <Text>loading</Text>
+            </View> : null}
         </View>
     );
 }

@@ -62,10 +62,10 @@ const Databaseshow = ({ props, route }) => {
     const msgvalid = txt => txt && txt.replace(/\s/g, '').length;
     console.log("red",allChat);
     
-    // setInterval(() => {
-    //     // console.log("got",allChat);
-    //        setCount(count+1)
-    //       }, 2000);  
+    setInterval(() => {
+        // console.log("got",allChat);
+           setCount(count+1)
+          }, 2000);  
     return (
         <View style={styles.container}>
             <ImageBackground
@@ -91,10 +91,14 @@ const Databaseshow = ({ props, route }) => {
                     keyExtractor={(item, index) => index}
                     inverted
                     renderItem={({ item }) => {
-                        // console.log("itme", item.msgType);
+                        // console.log("itme", item);
                         return (
                             <View style={{padding:10, backgroundColor:"grey",marginVertical:10, alignItems:"center", width:"80%", justifyContent:"center", alignSelf:"center"}}>
-                                <Text>{item.msgType}</Text>
+                                {/* <Text>{item}</Text> */}
+                                <Text>latitude:{item.latitude}</Text>
+                                <Text>longitude:{item.longitude}</Text>
+
+                                
                                 
 
                             </View>
